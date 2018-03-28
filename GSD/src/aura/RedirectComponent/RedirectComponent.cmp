@@ -1,0 +1,4 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" >
+    <aura:handler name="init" value="this" action="{!c.doInit}" />
+	<p>Loading Calendar</p>    
+</aura:component>

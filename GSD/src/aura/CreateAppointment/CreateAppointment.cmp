@@ -1,0 +1,152 @@
+<aura:component Controller="CreateAppointmentController" implements="force:hasRecordId">
+    <ltng:require styles="{!$Resource.FullCalendarJS + '/fullcalendar-3.9.0/fullcalendar.css'}"
+          scripts="{!join(',',
+                   $Resource.FullCalendarJS + '/fullcalendar-3.9.0/lib/jquery.min.js', 
+                       $Resource.FullCalendarJS  + '/fullcalendar-3.9.0/lib/moment.min.js',
+                       $Resource.FullCalendarJS  + '/fullcalendar-3.9.0/fullcalendar.min.js'
+                      )}"
+                  afterScriptsLoaded="{!c.afterScriptsLoaded}"
+     />
+    <ltng:require styles="/resource/FullCalendar/FullCalendar/fullcalendar.css"/>    
+    <aura:attribute name="leadId" type="String" />
+    <aura:attribute name="lead" type="Lead" default="{sobjectType: 'Lead'}" />
+    <aura:attribute name="owner" type="User" default="{sobjectType: 'Owner'}" />
+    <aura:attribute name="events" type="Object[]"  />    
+    <aura:attribute name="calEvent" type="Object" />
+    <aura:attribute name="newJSEvent" type="Object" />
+    <aura:attribute name="newEvent" type="Event" default="{sobjectType: 'Event'}" />
+    <aura:attribute name="isNewEvent" type="boolean" />
+    <aura:attribute name="eventSaved" type="boolean" default="false" />
+    <aura:attribute name="hours" type="List" />
+    <aura:attribute name="minutes" type="List" />
+    <aura:attribute name="ampm" type="List" />
+    <aura:attribute name="evSubject" type="List" />
+    <aura:attribute name="evShowAs" type="List" />
+    
+    <lightning:card title="Lead Information" class="slds-m-around_small" >    
+        <lightning:layout class="slds-p-left_small" horizontalAlign="start"  >
+            <lightning:layoutItem >
+                <span class="slds-form-element__label" >Name:</span><br/>
+                <ui:outputText >{!v.lead.FirstName}&nbsp;{!v.lead.LastName}</ui:outputText>
+            </lightning:layoutItem>
+            <lightning:layoutItem class="slds-p-left_small" >
+                    <span class="slds-form-element__label">Address:</span><br/>
+                    {!v.lead.Street},<br/>
+                    {!v.lead.City},<br/>
+                    {!v.lead.State}, {!v.lead.PostalCode}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </lightning:card>
+    <lightning:card title="Owner Information" class="slds-m-around_small">
+        <lightning:layout class="slds-p-left_small" horizontalAlign="start">
+            <lightning:layoutItem class="slds-p-right_small" >                
+                <span class="slds-form-element__label">Owner: </span><br/>
+                {!v.lead.Owner.FirstName}&nbsp;{!v.lead.Owner.LastName}
+            </lightning:layoutItem>            
+            <lightning:layoutItem class="slds-p-right_small" >
+                <span class="slds-form-element__label">Email: </span><br/>
+	            {!v.lead.Owner.Email}
+            </lightning:layoutItem>
+            <lightning:layoutItem class="slds-p-right_small" >
+                <span class="slds-form-element__label">Phone: </span><br/>
+                {!v.lead.Owner.Phone}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </lightning:card>            
+    
+    <aura:if isTrue="{!v.isNewEvent}" >
+        <button class="slds-button slds-button_brand" onclick="{!c.saveEvent}">Ok</button>
+        <section  class="slds-modal slds-fade-in-open slds-m-top_xx-large slds-p-top_xx-large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-modal__close" title="Close" 
+                            onclick="{!c.exitModal}">
+                        <lightning:icon class="white slds-icon_small" iconName="utility:close"/> 
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Schedule New Appointment</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" > 
+                    <span class="slds-form-element__label">Assigned To:</span>
+                    <ui:outputText value="{!v.owner.FirstName}" />&nbsp;<ui:outputText value="{!v.owner.LastName}" /><br/>
+                    <span class="slds-form-element__label">Start:</span>
+                    <ui:outputText value="{!v.newJSEvent.startDate}" />					
+                    <div aura:id="startTimeDiv" >
+                    <span class="slds-form-element__label slds-p-around_small">Initial Appointment Time:</span>
+                        <lightning:layout class="slds-p-left_small" horizontalAlign="start"  >
+                        <ui:inputSelect value="{!v.newJSEvent.startTimes.hour}" class="slds-m-horizontal_xx-small" >                            
+                            <aura:iteration items="{!v.hours}" var="hour" >
+                                <ui:inputSelectOption text="{!hour}" label="{!hour}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                        <ui:inputSelect value="{!v.newJSEvent.startTimes.minute}" class="slds-m-horizontal_xx-small" >                            
+                            <aura:iteration items="{!v.minutes}" var="minute" >
+                                <ui:inputSelectOption text="{!minute}" label="{!minute}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    	<ui:inputSelect value="{!v.newJSEvent.startTimes.ampm}" class="slds-m-horizontal_xx-small" >                            
+                            <aura:iteration items="{!v.ampm}" var="ap" >
+                                <ui:inputSelectOption text="{!ap}" label="{!ap}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                        </lightning:layout>
+                    </div>
+                    <div aura:id="endTimeDiv" >                        
+                    <span class="slds-form-element__label slds-p-around_small">End:</span>
+                        <lightning:layout class="slds-p-left_small" horizontalAlign="start"  >
+                        <ui:inputSelect value="{!v.newJSEvent.endTimes.hour}" class="slds-m-horizontal_xx-small" >
+                            <aura:iteration items="{!v.hours}" var="hour" >
+                                <ui:inputSelectOption text="{!hour}" label="{!hour}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                        <ui:inputSelect value="{!v.newJSEvent.endTimes.minute}" class="slds-m-horizontal_xx-small" >
+                            <aura:iteration items="{!v.minutes}" var="minute" >
+                                <ui:inputSelectOption text="{!minute}" label="{!minute}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    	<ui:inputSelect value="{!v.newJSEvent.endTimes.ampm}" class="slds-m-horizontal_xx-small" >                            
+                            <aura:iteration items="{!v.ampm}" var="ap" >
+                                <ui:inputSelectOption text="{!ap}" label="{!ap}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                        </lightning:layout>
+                    </div>
+                    <div class="slds-p-around_small" >
+						<span class="slds-form-element__label">Phone:</span>
+                        <ui:outputText value="{!v.lead.phone}" />                    
+                    </div>
+                    <div class="slds-p-around_small">
+	                    <span class="slds-form-element__label">Subject:</span>                    
+                        <ui:inputSelect value="{!v.newJSEvent.title}" aura:id="eventSubj" >
+                            <ui:inputSelectOption text="Appointment" ></ui:inputSelectOption>
+                            <aura:iteration items="{!v.evSubject}" var="val" >
+                                <ui:inputSelectOption text="{!val}" label="{!val}" ></ui:inputSelectOption>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-p-around_small">                    
+                    <span class="slds-form-element__label">Show Time As:</span>
+                    <ui:inputSelect value="{!v.newJSEvent.showAs}" >                        
+                        <aura:iteration items="{!v.evShowAs}" var="val" >                            
+                            <ui:inputSelectOption text="{!val}" label="{!val}" ></ui:inputSelectOption>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    </div>
+                    <div class="slds-p-around_small" >
+                    <span class="slds-form-element__label">Address:</span>
+                    {!v.lead.Street},<br/>
+                    {!v.lead.City},<br/>
+                    {!v.lead.State}, {!v.lead.PostalCode}
+                    </div>                    
+                </div>
+                <footer class="slds-modal__footer">                    
+                    <button class="slds-button slds-button_brand" onclick="{!c.saveEvent}">Ok</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>    	
+    <div id="calendar" class="calendar" />
+    <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="{!c.saveAppointment}">Save Appointment</button>	  
+</aura:component>

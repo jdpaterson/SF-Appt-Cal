@@ -1,0 +1,10 @@
+.THIS {	
+}
+.THIS#calendar {
+    max-width: 1200px;
+    margin: 15px auto;
+    padding: 15px 15px 15px 15px;
+    border: 'solid';
+    background-color: white;
+    
+  }
