@@ -56,8 +56,7 @@
             return "am";
         }else{
             return "pm";
-        }
-        //return 'am';
+        }        
     },
     popShowAsPicklist: function(component, event, helper){
     	var action = component.get("c.getShowAsPicklist");
@@ -181,6 +180,7 @@
         return isDoubleBooked;
     },
     convertLead: function(component, event, helper){
+        console.log('Converting lead');
         var action = component.get("c.getConvertLead");
         
         action.setParams({leadRecord: component.get("v.lead")});
@@ -206,8 +206,7 @@
     },
     insertEvent: function(component, event, helper){
 		
-        var action = component.get("c.getInsertEvent");
-        var urlEvent = $A.get("e.force:navigateToURL");
+        var action = component.get("c.getInsertEvent");        
         action.setParams({
             unixStart: component.get("v.newJSEvent").start.format('x'),
             unixEnd: component.get("v.newJSEvent").end.format('x'),
@@ -222,15 +221,16 @@
             if (state === "SUCCESS"){                                
                 console.log('Inserted Event: ' + response.getReturnValue().Id);
                 component.set("v.newEvent", response.getReturnValue());
-	    	if (urlEvent.!= undefined){
-		    urlEvent.setParams({
-		    "url": "/" + component.get("v.lead").ConvertedOpportunityId,
-                })
-                urlEvent.fire();
-		}else{
-		    window.location = "/" + component.get("v.lead").ConvertedOpportunityId;
-		}
+                var urlEvent = $A.get("e.force:navigateToURL"); 
                 
+                if (urlEvent != undefined){
+                	urlEvent.setParams({
+                    "url": '/' + component.get("v.lead").ConvertedOpportunityId,
+                	})
+                	urlEvent.fire();    
+                }else{
+                	window.location = "/" + component.get("v.lead").ConvertedOpportunityId;    
+                }                                
             }else if (state === "ERROR") {
                 var errors = response.getError();
                 if (errors) {
