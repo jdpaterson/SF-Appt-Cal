@@ -13,7 +13,7 @@ public class CreateAppointmentController {
     public static calendarData getData(String leadId){
         CalendarData cd = new CalendarData();
         Lead lead = [SELECT Id, FirstName, LastName, Street, City, State, PostalCode, OwnerId, Owner.FirstName, Owner.LastName, Owner.Phone, Owner.Email 
-                   FROM Lead WHERE Id =: '00Q6A0000067xezUAA']; 
+                   FROM Lead WHERE Id =: leadId ]; //'00Q6A0000067xezUAA']; 
         cd.lead = lead;        
         User owner = [SELECT Id, FirstName, LastName, City, State, Street, PostalCode from User WHERE Id =: lead.OwnerId];        
         cd.owner = owner;
