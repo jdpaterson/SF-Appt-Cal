@@ -1,10 +1,13 @@
 ({      
-    afterScriptsLoaded : function(component,event,helper){
+    afterScriptsLoaded : function(component,event,helper){        
         helper.fetchData(component, event, helper);
         helper.popTimePicklists(component, event, helper);
         helper.popSubjectPicklist(component, event, helper);
         helper.popShowAsPicklist(component, event, helper);     
         
+    },
+    callId: function(component){
+        alert(component.get("v.recordId"));
     },
     saveEvent: function(component, event, helper){        
         if (component.get("v.eventSaved") == false){            
@@ -13,10 +16,8 @@
             $('#calendar').fullCalendar('renderEvent', saveEvent, 'stick');
             component.set("v.eventSaved", true);
         }else{
-            var updEvent = helper.updateJSEvent(component.get("v.calEvent"), component.get("v.newJSEvent"));
-            console.log('after update, event start will be: ' + updEvent.start.format() );
-			var updSFEvent = helper.updateSFEvent(component, updEvent);
-            console.log('after further update, sfEvent start will be: ' + updSFEvent.start.format());
+            var updEvent = helper.updateJSEvent(component.get("v.calEvent"), component.get("v.newJSEvent"));            
+			var updSFEvent = helper.updateSFEvent(component, updEvent);            
             component.set("v.newJSEvent", updSFEvent);
             $('#calendar').fullCalendar('updateEvent', updEvent);
         }
