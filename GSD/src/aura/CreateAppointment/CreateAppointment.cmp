@@ -1,4 +1,4 @@
-<aura:component Controller="CreateAppointmentController" implements="force:hasRecordId">
+<aura:component Controller="CreateAppointmentController" implements="force:hasRecordId" >
     <ltng:require styles="{!$Resource.FullCalendarJS + '/fullcalendar-3.9.0/fullcalendar.css'}"
           scripts="{!join(',',
                    $Resource.FullCalendarJS + '/fullcalendar-3.9.0/lib/jquery.min.js', 
@@ -22,12 +22,12 @@
     <aura:attribute name="ampm" type="List" />
     <aura:attribute name="evSubject" type="List" />
     <aura:attribute name="evShowAs" type="List" />
-    
+        
     <lightning:card title="Lead Information" class="slds-m-around_small" >    
         <lightning:layout class="slds-p-left_small" horizontalAlign="start"  >
             <lightning:layoutItem >
                 <span class="slds-form-element__label" >Name:</span><br/>
-                <ui:outputText >{!v.lead.FirstName}&nbsp;{!v.lead.LastName}</ui:outputText>
+                {!v.lead.FirstName}&nbsp;{!v.lead.LastName}
             </lightning:layoutItem>
             <lightning:layoutItem class="slds-p-left_small" >
                     <span class="slds-form-element__label">Address:</span><br/>
@@ -147,6 +147,6 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </aura:if>    	
-    <div id="calendar" class="calendar" />
-    <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="{!c.saveAppointment}">Save Appointment</button>	  
+    <div id="calendar" class="calendar" />    	  
+    <button class="slds-button slds-button_brand slds-align_absolute-center" onclick="{!c.saveAppointment}">Submit Appointment</button>
 </aura:component>
