@@ -38,7 +38,7 @@
             var proceed = confirm('This time is now double booked, are you sure you want to proceed?');
         }
 		
-        if (proceed){
+        if (proceed != false){
         	console.log('Proceeding with lead conversion');    
             helper.convertLead(component,event,helper);                                         
         }
