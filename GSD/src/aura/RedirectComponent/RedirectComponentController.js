@@ -1,7 +1,6 @@
 ({
-	doInit : function(component, event, helper) {
-		//window.open('/c/CreateAppointmentApp.app?leadId=' + component.get("v.recordId")); 
-        console.log('Redirecting with Id: ' + component.get("v.recordId"));       
+	doRedirect : function(component, event, helper) {		
+        //alert('Redirecting with Id: ' + component.get("v.recordId"));       
         var evt = $A.get("e.force:navigateToComponent");
         evt.setParams({
             componentDef : "c:CreateAppointment",
