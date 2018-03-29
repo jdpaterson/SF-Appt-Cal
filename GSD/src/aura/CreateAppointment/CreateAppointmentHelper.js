@@ -221,11 +221,16 @@
             
             if (state === "SUCCESS"){                                
                 console.log('Inserted Event: ' + response.getReturnValue().Id);
-                component.set("v.newEvent", response.getReturnValue());                                
-                urlEvent.setParams({
-                    "url": "/" + component.get("v.lead").ConvertedOpportunityId,
+                component.set("v.newEvent", response.getReturnValue());
+	    	if (urlEvent.!= undefined){
+		    urlEvent.setParams({
+		    "url": "/" + component.get("v.lead").ConvertedOpportunityId,
                 })
                 urlEvent.fire();
+		}else{
+		    window.location = "/" + component.get("v.lead").ConvertedOpportunityId;
+		}
+                
             }else if (state === "ERROR") {
                 var errors = response.getError();
                 if (errors) {
